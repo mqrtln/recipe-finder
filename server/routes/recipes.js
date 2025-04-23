@@ -9,6 +9,7 @@ router.post("/favorite", async (req, res) => {
     title,
     publisher,
     ingredients,
+    description,
     image_url,
     source_url,
     original_api_id,
@@ -20,6 +21,7 @@ router.post("/favorite", async (req, res) => {
         title,
         publisher,
         ingredients,
+        description,
         image_url,
         source_url,
         original_api_id,
@@ -90,7 +92,8 @@ router.put("/favorite/:id", async (req, res) => {
         ingredients,
         remixed_by,
       })
-      .eq("id", id);
+      .eq("id", id)
+      .select();
 
     if (error) {
       console.error("Supabase update error:", error);

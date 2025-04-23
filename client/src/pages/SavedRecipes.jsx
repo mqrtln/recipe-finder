@@ -1,9 +1,31 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
-
+import EditRecipeForm from '../components/EditRecipeForm';
+import { NavLink } from 'react-router';
 const SavedRecipes = () => {
 	const [recipes, setRecipes] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [editingId, setEditingId] = useState(null); // State to track which recipe is being edited
+
+	const handleUpdate = async (id, updatedFields) => {
+		try {
+			const res = await fetch(`/api/favorite/${id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(updatedFields),
+			});
+
+			const data = await res.json();
+			if (res.ok) {
+				setRecipes((prev) => prev.map((r) => (r.id === id ? { ...r, ...data.data[0] } : r)));
+				setEditingId(null);
+			} else {
+				console.error('Failed to update recipe:', data.error);
+			}
+		} catch (err) {
+			console.error('Update error:', err);
+		}
+	};
 
 	const handleDelete = async (id) => {
 		const confirmed = window.confirm('Are you sure you want to delete this recipe?');
@@ -29,6 +51,7 @@ const SavedRecipes = () => {
 			try {
 				const res = await fetch('/api/favorites');
 				const json = await res.json();
+				console.log('Fetched favorites:', json.data);
 
 				if (res.ok) {
 					setRecipes(json.data); // Assuming data.data contains the recipes
@@ -62,6 +85,7 @@ const SavedRecipes = () => {
 								<img src={recipe.image_url} alt={recipe.title} />
 								<p>Published by: {recipe.publisher}</p>
 								<a href={recipe.source_url}>View Recipe</a>
+								<NavLink to={`/recipe/${recipe.original_api_id}`}>Go to recipe</NavLink>
 								{recipe.ingredients && recipe.ingredients.length > 0 ? (
 									<ul>
 										{recipe.ingredients.map((ingredient, idx) => (
@@ -73,8 +97,18 @@ const SavedRecipes = () => {
 										<em>No ingredients listed.</em>
 									</p>
 								)}
-
+								<p>
+									<strong>Description:</strong>{' '}
+									{recipe.description ? recipe.description : <em>No description provided.</em>}
+								</p>
 								<button onClick={() => handleDelete(recipe.id)}>Remove from favorites</button>
+								{editingId === recipe.id ? (
+									<EditRecipeForm recipe={recipe} onCancel={() => setEditingId(null)} onSave={handleUpdate} />
+								) : (
+									<>
+										<button onClick={() => setEditingId(recipe.id)}>Edit</button>
+									</>
+								)}
 							</div>
 						))
 					)}
