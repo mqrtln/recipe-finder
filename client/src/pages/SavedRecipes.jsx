@@ -51,7 +51,6 @@ const SavedRecipes = () => {
 			try {
 				const res = await fetch('/api/favorites');
 				const json = await res.json();
-				console.log('Fetched favorites:', json.data);
 
 				if (res.ok) {
 					setRecipes(json.data); // Assuming data.data contains the recipes
@@ -83,8 +82,27 @@ const SavedRecipes = () => {
 							<div key={recipe.id} className="recipe-card">
 								<h3>{recipe.title}</h3>
 								<img src={recipe.image_url} alt={recipe.title} />
-								<p>Published by: {recipe.publisher}</p>
-								<a href={recipe.source_url}>View Recipe</a>
+								<div
+									className="author-container"
+									style={{
+										display: 'flex',
+										flexDirection: 'row',
+										alignItems: 'center',
+									}}
+								>
+									<p>Published by: {recipe.publisher}</p>
+									<p style={{ marginLeft: '2px', marginRight: '2px' }}> - </p>
+									<a href={recipe.source_url}>{recipe.source_url}</a>
+								</div>
+								{recipe.remixed_by ? (
+									<p>
+										<strong>Remixed by:</strong> {recipe.remixed_by}
+									</p>
+								) : (
+									<p>
+										<em>Original recipe (no remix info)</em>
+									</p>
+								)}
 								<NavLink to={`/recipe/${recipe.original_api_id}`}>Go to recipe</NavLink>
 								{recipe.ingredients && recipe.ingredients.length > 0 ? (
 									<ul>

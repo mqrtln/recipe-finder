@@ -45,6 +45,8 @@ const Home = () => {
 			const data = await res.json();
 			if (res.ok) {
 				console.log('Recipe added to favorites:', data);
+				console.log('visual flare her later');
+
 				// Maybe show a success message or update the UI
 			} else {
 				console.error('Failed to add recipe to favorites:', data.error);
