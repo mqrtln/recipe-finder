@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router"
 import Home from "./pages/Home"
 import SavedRecipes from "./pages/SavedRecipes"
+import RecipeDetail from "./pages/RecipeDetail"
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/saved-recipes" element={<SavedRecipes />} />
+        <Route path="/recipe/:id" element={<RecipeDetail />} />
       </Routes>
     </div>
   )
